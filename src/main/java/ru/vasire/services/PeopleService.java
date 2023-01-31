@@ -1,5 +1,6 @@
 package ru.vasire.services;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +29,13 @@ public class PeopleService {
     }
 
     public Person findOne(int id) {
-        Optional<Person> foundPerson = peopleRepository.findById(id);
-        return foundPerson.orElse(null);
+        Optional<Person> personOptional = peopleRepository.findById(id);
+        if(personOptional.isPresent()){
+            Hibernate.initialize(personOptional.get().getBooks());
+            return personOptional.get();
+        }else{
+            return null;
+        }
     }
 
     @Transactional

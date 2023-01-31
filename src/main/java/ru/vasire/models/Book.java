@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -34,24 +35,24 @@ public class Book {
     private int publication;
 
     @Column(name = "checkOutDate")
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat( pattern = "dd.MM.yyyy hh:mm:ss")
     private Date checkOutDate;
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "personId", referencedColumnName = "id")
     private Person owner;
 
-    @Transient
-    private Integer personId;
-
-    public Integer getPersonId() {
-        if(owner!=null)
-            return owner.getId();
+    public int getPersonId() {
         return personId;
     }
 
     public void setPersonId(int personId) {
         this.personId = personId;
     }
+
+    @Transient
+    private int personId;
 
     public Date getCheckOutDate() {
         return checkOutDate;

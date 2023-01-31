@@ -32,8 +32,15 @@ public class BookService {
         this.peopleRepository = peopleRepository;
     }
 
-    public List<Book> findAll() {
-        return bookRepository.findAll(PageRequest.of(1, 3, Sort.by("publication"))).getContent();
+    public List<Book> findAll(int page, int books_per_page, boolean sort_by_year) {
+        if(sort_by_year)
+            return bookRepository.findAll(PageRequest.of(page, books_per_page, Sort.by("publication"))).getContent();
+        else
+            return bookRepository.findAll(PageRequest.of(page, books_per_page)).getContent();
+    }
+
+    public Book search(String startWord) {
+        return bookRepository.findByNameStartingWith(startWord).stream().findAny().orElse(null);
     }
 
     public Book findOne(int id) {
@@ -48,8 +55,15 @@ public class BookService {
 
     @Transactional
     public void update(int id, Book updatedBook) {
-        updatedBook.setId(id);
-        bookRepository.save(updatedBook);
+        Optional<Book> bookOptional = bookRepository.findById(id);
+        if(bookOptional.isPresent())
+        {
+            Book book = bookOptional.get();
+            book.setName(updatedBook.getName());
+            book.setAuthor(updatedBook.getAuthor());
+            book.setPublication(updatedBook.getPublication());
+            bookRepository.save(book);
+        }
     }
 
     @Transactional
@@ -58,9 +72,10 @@ public class BookService {
     }
 
     @Transactional
-    public void chekout(int bookId, int personId){
-        Person person = peopleRepository.findById(personId).orElse(null);
-        Book book = bookRepository.findById(bookId).orElse(null);
+    public void chekout(Book bookToCheckout){
+        Book book = bookRepository.findById(bookToCheckout.getId()).orElse(null);
+        Person person = peopleRepository.findById(bookToCheckout.getPersonId()).orElse(null);
+
         if(person != null & book != null){
             book.setOwner(person);
             book.setCheckOutDate(new Date());

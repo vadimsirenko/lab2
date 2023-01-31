@@ -25,8 +25,9 @@ public class BookController {
     }
 
     @GetMapping()
-    public String index(Model model){
-        model.addAttribute("books", bookService.findAll());
+    public String index(Model model, @RequestParam(required = true, defaultValue = "0") int page, @RequestParam(required = true, defaultValue = "3") int books_per_page,
+                        @RequestParam(required = true, defaultValue = "false") boolean sort_by_year){
+        model.addAttribute("books", bookService.findAll(page,books_per_page, sort_by_year));
         return "books/index";
     }
 
@@ -44,6 +45,21 @@ public class BookController {
             return "books/new";
         bookService.save(book);
         return "redirect:/books";
+    }
+
+    @GetMapping("/search")
+    public String search(Model model) {
+        model.addAttribute("book", (Book)null);
+        return "books/search";
+    }
+    @PostMapping("/search")
+    public String search(Model model, @RequestParam(required = true, defaultValue = "") String find) {
+        if(find.length()!=0){
+            model.addAttribute("book", bookService.search(find));
+        }else{
+            model.addAttribute("book", (Book)null);
+        }
+        return "books/search";
     }
 
     @GetMapping("/{id}")
@@ -80,7 +96,7 @@ public class BookController {
     @PatchMapping("/checkout")
     public String setPerson(@ModelAttribute("book") Book book) {
         System.out.println("book = " + book);
-        bookService.chekout(book.getId(), book.getPersonId());
+        bookService.chekout(book);
         return "redirect:/books";
     }
 

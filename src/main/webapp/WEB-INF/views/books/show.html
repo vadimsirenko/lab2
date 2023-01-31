@@ -7,7 +7,7 @@
 <body>
 <p style="font-weight: bold" th:text="${book.getName() +', '+ book.getAuthor() +', '+book.getPublication()}">VALUE</p>
 
-<form th:action="@{/books/checkout}" th:method="PATCH" th:if="${book.getPersonId() == null}" th:object="${book}">
+<form th:action="@{/books/checkout}" th:method="PATCH" th:if="${book.getOwner() == null}" th:object="${book}">
     <p>Эта книга свободна. Кому назначить ее?</p>
     <label for="book_person" >Выберите человека</label>
     <select th:field="*{personId}" id="book_person">
@@ -16,8 +16,8 @@
     <input type="hidden"  th:field="*{id}" />
     <input type="submit" name="Назначить книгу" value="Назначить книгу">
 </form>
-<form th:action="@{/books/checkin}" th:method="PATCH" th:if="${book.getPersonId() != null}" th:object="${book}">
-    <p th:text="${'Книга сейчас у: ' + book.getPersonName()}">Книга сейчас у ...</p>
+<form th:action="@{/books/checkin}" th:method="PATCH" th:if="${book.getOwner() != null}" th:object="${book}">
+    <p th:text="${'Книга сейчас у: ' + book.getOwner().getName()}">Книга сейчас у ...</p>
     <input type="hidden"  th:field="*{id}" />
     <input type="submit" name="Освободить книгу" value="Освободить книгу">
 </form>
