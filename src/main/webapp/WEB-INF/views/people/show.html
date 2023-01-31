@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Человек</title>
+    <style>
+        li.overdue
+        {
+            color: red!important;
+        }
+    </style>
+</head>
+<body>
+<p style="font-weight: bold" th:text="${person.getName() +', '+ person.getBirthDate()}">VALUE</p>
+<!-- Если есть книги -->
+    <p  th:if="${person.hasBook()}">
+        Книги:
+        <br/>
+    <ul>
+        <li th:each="book : ${books}" th:class="${book.OverdueClass()}" th:text="${book.getName() + ', ' + book.getAuthor() + ', ' + book.getPublication()}"></li>
+    </ul>
+    </p>
+<!-- Иначе, если книг нет -->
+    <p  th:unless="${person.hasBook()}">
+        Человек пока не взял ни одной книги
+    </p>
+<!-- ---->
+<hr />
+<a th:href="@{/people/{id}/edit(id=${person.getId()})}">Изменить</a>
+<form th:method="DELETE" th:action="@{/people/{id}(id=${person.getId()})}">
+    <input type="submit" value="Удалить">
+</form>
+</body>
+</html>
